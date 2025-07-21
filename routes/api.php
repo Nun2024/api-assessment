@@ -10,6 +10,7 @@ use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\ResetPassowrdController;
 use App\Http\Controllers\UserAssessmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -69,6 +70,7 @@ Route::post('/upload',[FileUploadController::class,'upload']);
 // user
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/reset-password',[ResetPassowrdController::class,'reset']);
 Route::get('/feedback/user', [FeedbackController::class, 'index']);
 
 // stats
