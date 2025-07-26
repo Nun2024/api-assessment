@@ -55,7 +55,7 @@ Route::middleware('auth:sanctum')->group(function (){
     // instructor
     Route::post('/instructor/assessments',[AssessmentController::class,'store']);
     Route::get('/take-assessment/{slug}', [AssessmentController::class, 'assessmentBySlug']);
-    Route::get('/student/{instructorId}/result',[AssessmentController::class,'studentResult']);
+    Route::get('/student/result',[AssessmentController::class,'studentResult']);
 
     // student
     Route::post('/student/submitResult',[MessageController::class,'store']);

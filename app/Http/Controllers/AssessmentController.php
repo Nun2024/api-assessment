@@ -268,9 +268,9 @@ class AssessmentController extends Controller
         return response()->json($assessments);
     }
 
-    public function studentResult($instructorId)
+    public function studentResult(Request $request)
     {
-        $rawData = DB::table('user_assessments')
+        $paginator = DB::table('user_assessments')
             ->join('users', 'user_assessments.user_id', '=', 'users.id')
             ->join('assessments', 'user_assessments.assessment_id', '=', 'assessments.id')
             ->select(
@@ -282,14 +282,30 @@ class AssessmentController extends Controller
                 'user_assessments.completion_time as time_completed',
                 'user_assessments.created_at as submit_at'
             )
-            ->where('assessments.user_id', $instructorId)
-            ->get();
-        $data = $rawData->map(function ($item) {
-            $item->grade = $this->getGrade($item->score);
-            $item->submit_at = Carbon::parse($item->submit_at);
-            return $item;
-        });
-        return response()->json($data);
+            ->orderBy('user_assessments.created_at', 'desc')
+            ->paginate($request->per_page ?? 10);
+
+        $paginator->getCollection()->transform(fn($item) => (object)[
+            ...get_object_vars($item),
+            'grade'     => $this->getGrade($item->score),
+            'submit_at' => \Carbon\Carbon::parse($item->submit_at),
+        ]);
+
+        return response()->json([
+            'data' => $paginator->items(),
+            'meta' => [
+                'current_page'    => $paginator->currentPage(),
+                'last_page'       => $paginator->lastPage(),
+                'per_page'        => $paginator->perPage(),
+                'total'           => $paginator->total(),
+                'from'            => $paginator->firstItem(),
+                'to'              => $paginator->lastItem(),
+                'next_page_url'   => $paginator->nextPageUrl(),
+                'prev_page_url'   => $paginator->previousPageUrl(),
+                'first_page_url'  => $paginator->url(1),
+                'last_page_url'   => $paginator->url($paginator->lastPage()),
+            ],
+        ]);
     }
 
     // helper function
