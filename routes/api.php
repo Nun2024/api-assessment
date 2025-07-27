@@ -51,6 +51,7 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('/user/feedback/{userId}',[FeedbackController::class,'show']);
     Route::post('/users',[AuthController::class,'create']);
     Route::post('/user/feedback',[FeedbackController::class,'store']);
+    Route::delete('/delete/{uerId}/user',[AuthController::class,"delete"]);
 
     // instructor
     Route::post('/instructor/assessments',[AssessmentController::class,'store']);
