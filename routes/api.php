@@ -51,11 +51,12 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('/user/feedback/{userId}',[FeedbackController::class,'show']);
     Route::post('/users',[AuthController::class,'create']);
     Route::post('/user/feedback',[FeedbackController::class,'store']);
+    Route::delete('/delete/{uerId}/user',[AuthController::class,"delete"]);
 
     // instructor
     Route::post('/instructor/assessments',[AssessmentController::class,'store']);
     Route::get('/take-assessment/{slug}', [AssessmentController::class, 'assessmentBySlug']);
-    Route::get('/student/{instructorId}/result',[AssessmentController::class,'studentResult']);
+    Route::get('/student/result',[AssessmentController::class,'studentResult']);
 
     // student
     Route::post('/student/submitResult',[MessageController::class,'store']);

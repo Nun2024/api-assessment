@@ -26,31 +26,25 @@ class QuestionController extends Controller
 
         $query = Question::with('assessment');
 
-        // Role-based access
-        if ($user->role === 'instructor') {
-            $query->whereHas('assessment', fn($q) => $q->where('user_id', $user->id));
-        }
-
         // Filter by assessment ID
-        if ($request->filled('id')) {
-            $query->whereHas('assessment', fn($q) => $q->where('id', $request->id));
+        if ($request->filled('assessment_id')) {
+            $query->whereHas('assessment', fn($q) => $q->where('id', $request->assessment_id));
         }
 
-        // Filter by difficulty
+        // Filter by difficulty (direct on questions table)
         if ($request->filled('difficulty')) {
             $query->whereHas('assessment', fn($q) => $q->where('difficulty', $request->difficulty));
         }
 
-        // Filter by question title
+        // Filter by title (case-insensitive)
         if ($request->filled('title')) {
-            $query->where('title', 'like', '%' . $request->title . '%');
+            $query->whereRaw('UPPER(questions.title) LIKE ?', ['%' . strtoupper($request->title) . '%']);
         }
 
         $questions = $query->latest()->paginate($perPage, ['*'], 'page', $page);
 
         return QuestionResource::collection($questions);
     }
-
 
     /**
      * Store a newly created resource in storage.
